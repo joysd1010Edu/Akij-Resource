@@ -1,0 +1,1123 @@
+{
+  "info": {
+    "_postman_id": "3c16fc0b-e736-4f0f-a4d8-6ccf8dc0b901",
+    "name": "IBOS Backend API",
+    "description": "Collection for testing Auth, Teacher, and Student flows of the IBOS backend.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "base_url", "value": "http://localhost:5000" },
+    { "key": "api_prefix", "value": "/api" },
+    { "key": "auth_token", "value": "" },
+    { "key": "teacher_token", "value": "" },
+    { "key": "student_token", "value": "" },
+    { "key": "admin_token", "value": "" },
+    { "key": "testId", "value": "" },
+    { "key": "slotId", "value": "" },
+    { "key": "questionSetId", "value": "" },
+    { "key": "questionId", "value": "" },
+    { "key": "optionId", "value": "" },
+    { "key": "attemptId", "value": "" },
+    { "key": "answerId", "value": "" },
+    { "key": "studentUserId", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "Get Health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}{{api_prefix}}/health",
+              "host": ["{{base_url}}"],
+              "path": ["{{api_prefix}}", "health"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res?.data?.token) {",
+                  "  pm.collectionVariables.set('auth_token', res.data.token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"full_name\": \"Demo Student Register\",\n  \"email\": \"new.student@example.com\",\n  \"user_id_login\": \"newstudent\",\n  \"password\": \"Student@123\",\n  \"role\": \"student\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}{{api_prefix}}/auth/register",
+              "host": ["{{base_url}}"],
+              "path": ["{{api_prefix}}", "auth", "register"]
+            }
+          }
+        },
+        {
+          "name": "Login Teacher",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res?.data?.token) {",
+                  "  pm.collectionVariables.set('teacher_token', res.data.token);",
+                  "  pm.collectionVariables.set('auth_token', res.data.token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"login\": \"teacher1\",\n  \"password\": \"Teacher@123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}{{api_prefix}}/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["{{api_prefix}}", "auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Login Student",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res?.data?.token) {",
+                  "  pm.collectionVariables.set('student_token', res.data.token);",
+                  "  pm.collectionVariables.set('auth_token', res.data.token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"login\": \"student1\",\n  \"password\": \"Student@123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}{{api_prefix}}/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["{{api_prefix}}", "auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Login Admin",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res?.data?.token) {",
+                  "  pm.collectionVariables.set('admin_token', res.data.token);",
+                  "  pm.collectionVariables.set('auth_token', res.data.token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"login\": \"admin1\",\n  \"password\": \"Admin@123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}{{api_prefix}}/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["{{api_prefix}}", "auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Get Me",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                { "key": "token", "value": "{{auth_token}}", "type": "string" }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}{{api_prefix}}/auth/me",
+              "host": ["{{base_url}}"],
+              "path": ["{{api_prefix}}", "auth", "me"]
+            }
+          }
+        },
+        {
+          "name": "Seed Register (Dev)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"full_name\": \"Seed Teacher\",\n  \"email\": \"seed.teacher@example.com\",\n  \"user_id_login\": \"seedteacher\",\n  \"password\": \"Teacher@123\",\n  \"role\": \"teacher\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}{{api_prefix}}/auth/seed-register",
+              "host": ["{{base_url}}"],
+              "path": ["{{api_prefix}}", "auth", "seed-register"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Teacher",
+      "item": [
+        {
+          "name": "Create Test",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res?.data?._id) {",
+                  "  pm.collectionVariables.set('testId', res.data._id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{teacher_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Sample Mid Term Test\",\n  \"start_time\": \"2026-12-01T09:00:00.000Z\",\n  \"end_time\": \"2026-12-01T11:00:00.000Z\",\n  \"duration_minutes\": 90,\n  \"question_type_mode\": \"mixed\",\n  \"negative_marking_enabled\": true,\n  \"negative_mark_per_wrong\": 0.25,\n  \"instructions\": \"Read all questions carefully\",\n  \"show_result_to_student\": true\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}{{api_prefix}}/teacher/tests",
+              "host": ["{{base_url}}"],
+              "path": ["{{api_prefix}}", "teacher", "tests"]
+            }
+          }
+        },
+        {
+          "name": "List Tests",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{teacher_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}{{api_prefix}}/teacher/tests?page=1&limit=10&search=&status=",
+              "host": ["{{base_url}}"],
+              "path": ["{{api_prefix}}", "teacher", "tests"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "10" },
+                { "key": "search", "value": "" },
+                { "key": "status", "value": "" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Test Details",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{teacher_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}{{api_prefix}}/teacher/tests/{{testId}}",
+              "host": ["{{base_url}}"],
+              "path": ["{{api_prefix}}", "teacher", "tests", "{{testId}}"]
+            }
+          }
+        },
+        {
+          "name": "Update Test",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{teacher_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Updated Mid Term Test\",\n  \"instructions\": \"Updated instructions\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}{{api_prefix}}/teacher/tests/{{testId}}",
+              "host": ["{{base_url}}"],
+              "path": ["{{api_prefix}}", "teacher", "tests", "{{testId}}"]
+            }
+          }
+        },
+        {
+          "name": "Create Slot",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res?.data?._id) {",
+                  "  pm.collectionVariables.set('slotId', res.data._id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{teacher_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"start_time\": \"2026-12-01T09:00:00.000Z\",\n  \"end_time\": \"2026-12-01T10:30:00.000Z\",\n  \"duration_minutes\": 90,\n  \"candidate_limit\": 50\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}{{api_prefix}}/teacher/tests/{{testId}}/slots",
+              "host": ["{{base_url}}"],
+              "path": [
+                "{{api_prefix}}",
+                "teacher",
+                "tests",
+                "{{testId}}",
+                "slots"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Question Set",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res?.data?._id) {",
+                  "  pm.collectionVariables.set('questionSetId', res.data._id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{teacher_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"set_name\": \"Set A\",\n  \"set_no\": 1\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}{{api_prefix}}/teacher/tests/{{testId}}/question-sets",
+              "host": ["{{base_url}}"],
+              "path": [
+                "{{api_prefix}}",
+                "teacher",
+                "tests",
+                "{{testId}}",
+                "question-sets"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Question",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res?.data?._id) {",
+                  "  pm.collectionVariables.set('questionId', res.data._id);",
+                  "}",
+                  "if (res?.data?.options && res.data.options.length > 0) {",
+                  "  pm.collectionVariables.set('optionId', res.data.options[0]._id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{teacher_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"question_set_id\": \"{{questionSetId}}\",\n  \"question_type\": \"radio\",\n  \"title_html\": \"<p>What is 2 + 2 ?</p>\",\n  \"plain_text\": \"What is 2 + 2 ?\",\n  \"score\": 1,\n  \"negative_mark\": 0.25,\n  \"options\": [\n    {\"option_key\": \"A\", \"option_text_html\": \"<p>3</p>\", \"is_correct\": false, \"sort_order\": 1},\n    {\"option_key\": \"B\", \"option_text_html\": \"<p>4</p>\", \"is_correct\": true, \"sort_order\": 2},\n    {\"option_key\": \"C\", \"option_text_html\": \"<p>5</p>\", \"is_correct\": false, \"sort_order\": 3}\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}{{api_prefix}}/teacher/tests/{{testId}}/questions",
+              "host": ["{{base_url}}"],
+              "path": [
+                "{{api_prefix}}",
+                "teacher",
+                "tests",
+                "{{testId}}",
+                "questions"
+              ]
+            }
+          }
+        },
+        {
+          "name": "List Questions",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{teacher_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}{{api_prefix}}/teacher/tests/{{testId}}/questions?page=1&limit=10&question_set_id={{questionSetId}}",
+              "host": ["{{base_url}}"],
+              "path": [
+                "{{api_prefix}}",
+                "teacher",
+                "tests",
+                "{{testId}}",
+                "questions"
+              ],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "10" },
+                { "key": "question_set_id", "value": "{{questionSetId}}" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Question",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{teacher_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title_html\": \"<p>What is 2 + 3 ?</p>\",\n  \"plain_text\": \"What is 2 + 3 ?\",\n  \"score\": 2\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}{{api_prefix}}/teacher/questions/{{questionId}}",
+              "host": ["{{base_url}}"],
+              "path": [
+                "{{api_prefix}}",
+                "teacher",
+                "questions",
+                "{{questionId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Add Question Options",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{teacher_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"options\": [\n    {\"option_key\": \"D\", \"option_text_html\": \"<p>6</p>\", \"is_correct\": false, \"sort_order\": 4}\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}{{api_prefix}}/teacher/questions/{{questionId}}/options",
+              "host": ["{{base_url}}"],
+              "path": [
+                "{{api_prefix}}",
+                "teacher",
+                "questions",
+                "{{questionId}}",
+                "options"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Question Option",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{teacher_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"option_text_html\": \"<p>Updated option text</p>\",\n  \"is_correct\": false\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}{{api_prefix}}/teacher/questions/{{questionId}}/options/{{optionId}}",
+              "host": ["{{base_url}}"],
+              "path": [
+                "{{api_prefix}}",
+                "teacher",
+                "questions",
+                "{{questionId}}",
+                "options",
+                "{{optionId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Assign Candidates",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{teacher_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"slot_id\": \"{{slotId}}\",\n  \"question_set_id\": \"{{questionSetId}}\",\n  \"student_ids\": [\"{{studentUserId}}\"]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}{{api_prefix}}/teacher/tests/{{testId}}/candidates/assign",
+              "host": ["{{base_url}}"],
+              "path": [
+                "{{api_prefix}}",
+                "teacher",
+                "tests",
+                "{{testId}}",
+                "candidates",
+                "assign"
+              ]
+            }
+          }
+        },
+        {
+          "name": "List Candidates",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{teacher_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}{{api_prefix}}/teacher/tests/{{testId}}/candidates?page=1&limit=10&attendance_status=",
+              "host": ["{{base_url}}"],
+              "path": [
+                "{{api_prefix}}",
+                "teacher",
+                "tests",
+                "{{testId}}",
+                "candidates"
+              ],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "10" },
+                { "key": "attendance_status", "value": "" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Publish Test",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{teacher_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}{{api_prefix}}/teacher/tests/{{testId}}/publish",
+              "host": ["{{base_url}}"],
+              "path": [
+                "{{api_prefix}}",
+                "teacher",
+                "tests",
+                "{{testId}}",
+                "publish"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Test Metrics",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{teacher_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}{{api_prefix}}/teacher/tests/{{testId}}/metrics",
+              "host": ["{{base_url}}"],
+              "path": [
+                "{{api_prefix}}",
+                "teacher",
+                "tests",
+                "{{testId}}",
+                "metrics"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Text Answer Reviews",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "const first = res?.data?.[0];",
+                  "if (first?._id) {",
+                  "  pm.collectionVariables.set('answerId', first._id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{teacher_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}{{api_prefix}}/teacher/tests/{{testId}}/text-answer-reviews?page=1&limit=10&review_status=pending_manual_review",
+              "host": ["{{base_url}}"],
+              "path": [
+                "{{api_prefix}}",
+                "teacher",
+                "tests",
+                "{{testId}}",
+                "text-answer-reviews"
+              ],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "10" },
+                { "key": "review_status", "value": "pending_manual_review" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Review Text Answer",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{teacher_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"obtained_marks\": 1,\n  \"is_correct\": true,\n  \"review_comment\": \"Good text answer\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}{{api_prefix}}/teacher/attempt-answers/{{answerId}}/review",
+              "host": ["{{base_url}}"],
+              "path": [
+                "{{api_prefix}}",
+                "teacher",
+                "attempt-answers",
+                "{{answerId}}",
+                "review"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete Question (Soft)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{teacher_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}{{api_prefix}}/teacher/questions/{{questionId}}",
+              "host": ["{{base_url}}"],
+              "path": [
+                "{{api_prefix}}",
+                "teacher",
+                "questions",
+                "{{questionId}}"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Student",
+      "item": [
+        {
+          "name": "Get Assigned Tests",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{student_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}{{api_prefix}}/student/tests?page=1&limit=10&search=",
+              "host": ["{{base_url}}"],
+              "path": ["{{api_prefix}}", "student", "tests"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "10" },
+                { "key": "search", "value": "" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Dashboard Metrics",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{student_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}{{api_prefix}}/student/dashboard/metrics",
+              "host": ["{{base_url}}"],
+              "path": ["{{api_prefix}}", "student", "dashboard", "metrics"]
+            }
+          }
+        },
+        {
+          "name": "Get Assigned Test Details",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{student_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}{{api_prefix}}/student/tests/{{testId}}",
+              "host": ["{{base_url}}"],
+              "path": ["{{api_prefix}}", "student", "tests", "{{testId}}"]
+            }
+          }
+        },
+        {
+          "name": "Start Test",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res?.data?.attempt_id) {",
+                  "  pm.collectionVariables.set('attemptId', res.data.attempt_id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{student_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"device_info\": {\n    \"platform\": \"Postman\",\n    \"user_agent\": \"PostmanRuntime\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}{{api_prefix}}/student/tests/{{testId}}/start",
+              "host": ["{{base_url}}"],
+              "path": [
+                "{{api_prefix}}",
+                "student",
+                "tests",
+                "{{testId}}",
+                "start"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Current Question",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{student_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}{{api_prefix}}/student/attempts/{{attemptId}}/current-question",
+              "host": ["{{base_url}}"],
+              "path": [
+                "{{api_prefix}}",
+                "student",
+                "attempts",
+                "{{attemptId}}",
+                "current-question"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Answer Current Question (MCQ)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{student_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"selected_option_ids\": [\"{{optionId}}\"]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}{{api_prefix}}/student/attempts/{{attemptId}}/answer",
+              "host": ["{{base_url}}"],
+              "path": [
+                "{{api_prefix}}",
+                "student",
+                "attempts",
+                "{{attemptId}}",
+                "answer"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Answer Current Question (Text)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{student_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"text_answer_plain\": \"This is my written answer\",\n  \"text_answer_html\": \"<p>This is my written answer</p>\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}{{api_prefix}}/student/attempts/{{attemptId}}/answer",
+              "host": ["{{base_url}}"],
+              "path": [
+                "{{api_prefix}}",
+                "student",
+                "attempts",
+                "{{attemptId}}",
+                "answer"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Skip Current Question",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{student_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}{{api_prefix}}/student/attempts/{{attemptId}}/skip",
+              "host": ["{{base_url}}"],
+              "path": [
+                "{{api_prefix}}",
+                "student",
+                "attempts",
+                "{{attemptId}}",
+                "skip"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Submit Attempt",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{student_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}{{api_prefix}}/student/attempts/{{attemptId}}/submit",
+              "host": ["{{base_url}}"],
+              "path": [
+                "{{api_prefix}}",
+                "student",
+                "attempts",
+                "{{attemptId}}",
+                "submit"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Attempt Result",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{student_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}{{api_prefix}}/student/attempts/{{attemptId}}/result",
+              "host": ["{{base_url}}"],
+              "path": [
+                "{{api_prefix}}",
+                "student",
+                "attempts",
+                "{{attemptId}}",
+                "result"
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
