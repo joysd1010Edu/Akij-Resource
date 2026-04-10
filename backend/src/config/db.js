@@ -1,7 +1,9 @@
+/* ==========  backend/src/config/db.js  ===============*/
 const mongoose = require("mongoose");
 
 mongoose.set("strictQuery", true);
 
+/* ==========  Function connectToDatabase contains reusable module logic used by this feature.  ===============*/
 async function connectToDatabase() {
   if (mongoose.connection.readyState === 1) {
     return mongoose.connection;
@@ -27,6 +29,7 @@ async function connectToDatabase() {
   return mongoose.connection;
 }
 
+/* ==========  Function closeDatabase contains reusable module logic used by this feature.  ===============*/
 async function closeDatabase() {
   if (mongoose.connection.readyState !== 0) {
     await mongoose.connection.close();

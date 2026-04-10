@@ -1,3 +1,4 @@
+/* ==========  backend/src/validators/authValidators.js  ===============*/
 const { body } = require("express-validator");
 
 const loginValidator = [

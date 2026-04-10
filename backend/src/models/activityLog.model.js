@@ -1,3 +1,4 @@
+/* ==========  backend/src/models/activityLog.model.js  ===============*/
 const mongoose = require("mongoose");
 
 const activityLogSchema = new mongoose.Schema(

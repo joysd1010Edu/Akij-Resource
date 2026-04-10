@@ -1,3 +1,4 @@
+/* ==========  backend/src/services/resultService.js  ===============*/
 const {
   Test,
   TestSlot,
@@ -10,6 +11,7 @@ const {
 } = require("../models");
 const ApiError = require("../utils/apiError");
 
+/* ==========  Function getGrade gets get grade data for the current module flow.  ===============*/
 function getGrade(percentage) {
   if (percentage >= 80) {
     return "A+";
@@ -34,10 +36,12 @@ function getGrade(percentage) {
   return "F";
 }
 
+/* ==========  Function normalizeObjectIdArray builds helper output used by other functions in this file.  ===============*/
 function normalizeObjectIdArray(values = []) {
   return values.map((item) => String(item)).sort();
 }
 
+/* ==========  Function arraysMatchAsSet contains reusable module logic used by this feature.  ===============*/
 function arraysMatchAsSet(valuesA = [], valuesB = []) {
   if (valuesA.length !== valuesB.length) {
     return false;
@@ -49,6 +53,7 @@ function arraysMatchAsSet(valuesA = [], valuesB = []) {
   return sortedA.every((value, index) => value === sortedB[index]);
 }
 
+/* ==========  Function normalizeText builds helper output used by other functions in this file.  ===============*/
 function normalizeText(value) {
   return String(value || "")
     .replace(/<[^>]*>/g, " ")
@@ -57,6 +62,7 @@ function normalizeText(value) {
     .toLowerCase();
 }
 
+/* ==========  Function getAttemptWithContext gets get attempt with context data for the current module flow.  ===============*/
 async function getAttemptWithContext(attemptId) {
   const attempt = await TestAttempt.findById(attemptId);
   if (!attempt) {
@@ -79,6 +85,7 @@ async function getAttemptWithContext(attemptId) {
   };
 }
 
+/* ==========  Function computeAttemptDeadline builds helper output used by other functions in this file.  ===============*/
 function computeAttemptDeadline(attempt, test, slot) {
   const now = new Date();
   const absoluteEnd = Math.min(
@@ -106,6 +113,7 @@ function computeAttemptDeadline(attempt, test, slot) {
   };
 }
 
+/* ==========  Function calculateAttemptSnapshot builds helper output used by other functions in this file.  ===============*/
 async function calculateAttemptSnapshot(attemptInput) {
   const attempt = attemptInput.toObject
     ? attemptInput.toObject()
@@ -225,6 +233,7 @@ async function calculateAttemptSnapshot(attemptInput) {
   };
 }
 
+/* ==========  Function upsertAttemptResult contains reusable module logic used by this feature.  ===============*/
 async function upsertAttemptResult(attemptDoc, options = {}) {
   const attempt = attemptDoc.toObject
     ? attemptDoc
@@ -332,6 +341,7 @@ async function upsertAttemptResult(attemptDoc, options = {}) {
   };
 }
 
+/* ==========  Function evaluateMcqAnswer contains reusable module logic used by this feature.  ===============*/
 async function evaluateMcqAnswer({ question, answerPayload, test }) {
   const selectedOptionIds = normalizeObjectIdArray(
     answerPayload.selected_option_ids || [],
@@ -391,6 +401,7 @@ async function evaluateMcqAnswer({ question, answerPayload, test }) {
   };
 }
 
+/* ==========  Function evaluateTextAnswer contains reusable module logic used by this feature.  ===============*/
 function evaluateTextAnswer({ question, answerPayload }) {
   const plainAnswer = answerPayload.text_answer_plain
     ? String(answerPayload.text_answer_plain)

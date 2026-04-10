@@ -1,3 +1,4 @@
+/* ==========  backend/src/controllers/authController.js  ===============*/
 const {
   loginUser,
   registerUser,
@@ -10,6 +11,7 @@ const jwt = require("jsonwebtoken");
 const asyncHandler = require("../utils/asyncHandler");
 const { sendSuccess } = require("../utils/apiResponse");
 
+/* ==========  Function getTokenMaxAge gets get token max age data for the current module flow.  ===============*/
 function getTokenMaxAge(token) {
   const decoded = jwt.decode(token);
 
@@ -20,6 +22,7 @@ function getTokenMaxAge(token) {
   return Math.max(0, decoded.exp * 1000 - Date.now());
 }
 
+/* ==========  Function buildCookieOptions builds helper output used by other functions in this file.  ===============*/
 function buildCookieOptions(token) {
   const maxAge = getTokenMaxAge(token);
 
@@ -37,6 +40,7 @@ function buildCookieOptions(token) {
   return options;
 }
 
+/* ==========  Function setAuthCookies updates set auth cookies values for this workflow.  ===============*/
 function setAuthCookies(res, authResult) {
   res.cookie(
     "access_token",
@@ -50,6 +54,7 @@ function setAuthCookies(res, authResult) {
   );
 }
 
+/* ==========  Function clearAuthCookies removes clear auth cookies related data in this module.  ===============*/
 function clearAuthCookies(res) {
   const options = {
     httpOnly: true,
@@ -62,7 +67,9 @@ function clearAuthCookies(res) {
   res.clearCookie("refresh_token", options);
 }
 
+/* ==========  Function buildRequestContext builds helper output used by other functions in this file.  ===============*/
 function buildRequestContext(req) {
+  /*===== keep possible refresh token sources in one place ===========*/
   return {
     ip: req.ip,
     userAgent: req.headers["user-agent"] || null,
@@ -71,6 +78,7 @@ function buildRequestContext(req) {
   };
 }
 
+/* ==========  Function login contains reusable module logic used by this feature.  ===============*/
 const login = asyncHandler(async (req, res) => {
   const authResult = await loginUser({
     ...req.body,
@@ -93,6 +101,7 @@ const login = asyncHandler(async (req, res) => {
   );
 });
 
+/* ==========  Function register creates register data used by this module.  ===============*/
 const register = asyncHandler(async (req, res) => {
   const authResult = await registerUser({
     ...req.body,
@@ -116,7 +125,9 @@ const register = asyncHandler(async (req, res) => {
   );
 });
 
+/* ==========  Function refresh contains reusable module logic used by this feature.  ===============*/
 const refresh = asyncHandler(async (req, res) => {
+  /*===== refresh can use body token or cookie token ===========*/
   const authResult = await refreshAuthTokens({
     refresh_token: req.body?.refresh_token,
     context: buildRequestContext(req),
@@ -138,6 +149,7 @@ const refresh = asyncHandler(async (req, res) => {
   );
 });
 
+/* ==========  Function logout contains reusable module logic used by this feature.  ===============*/
 const logout = asyncHandler(async (req, res) => {
   await logoutUser({
     refresh_token: req.body?.refresh_token,
@@ -149,11 +161,13 @@ const logout = asyncHandler(async (req, res) => {
   sendSuccess(res, { logged_out: true }, "Logout successful");
 });
 
+/* ==========  Function me contains reusable module logic used by this feature.  ===============*/
 const me = asyncHandler(async (req, res) => {
   const profile = await getMyProfile(req.user._id);
   sendSuccess(res, profile, "Current user profile fetched");
 });
 
+/* ==========  Function registerSeedUser creates register seed user data used by this module.  ===============*/
 const registerSeedUser = asyncHandler(async (req, res) => {
   const user = await createSeedUser(req.body);
   sendSuccess(res, user, "Seed user created", 201);

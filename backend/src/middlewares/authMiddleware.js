@@ -1,9 +1,11 @@
+/* ==========  backend/src/middlewares/authMiddleware.js  ===============*/
 const jwt = require("jsonwebtoken");
 
 const { User } = require("../models");
 const ApiError = require("../utils/apiError");
 const asyncHandler = require("../utils/asyncHandler");
 
+/* ==========  Function auth contains reusable module logic used by this feature.  ===============*/
 const auth = asyncHandler(async (req, res, next) => {
   const authorization = req.headers.authorization || "";
   const bearerToken = authorization.startsWith("Bearer ")

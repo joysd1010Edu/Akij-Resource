@@ -1,3 +1,4 @@
+/* ==========  backend/src/models/refreshToken.model.js  ===============*/
 const mongoose = require("mongoose");
 
 const refreshTokenSchema = new mongoose.Schema(

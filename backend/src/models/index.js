@@ -1,3 +1,4 @@
+/* ==========  backend/src/models/index.js  ===============*/
 const User = require("./user.model");
 const Test = require("./test.model");
 const TestSlot = require("./testSlot.model");
@@ -26,6 +27,7 @@ const modelMap = {
   RefreshToken,
 };
 
+/* ==========  Function syncAllIndexes updates sync all indexes values for this workflow.  ===============*/
 async function syncAllIndexes() {
   for (const model of Object.values(modelMap)) {
     await model.syncIndexes();

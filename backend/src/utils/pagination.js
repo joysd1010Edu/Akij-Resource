@@ -1,3 +1,5 @@
+/* ==========  backend/src/utils/pagination.js  ===============*/
+/* ==========  Function toPositiveNumber contains reusable module logic used by this feature.  ===============*/
 function toPositiveNumber(value, fallback) {
   const parsed = Number(value);
   if (!Number.isFinite(parsed) || parsed <= 0) {
@@ -7,6 +9,7 @@ function toPositiveNumber(value, fallback) {
   return Math.floor(parsed);
 }
 
+/* ==========  Function parsePagination builds helper output used by other functions in this file.  ===============*/
 function parsePagination(query = {}, defaults = {}) {
   const page = toPositiveNumber(query.page, defaults.page || 1);
   const limit = Math.min(
@@ -22,6 +25,7 @@ function parsePagination(query = {}, defaults = {}) {
   };
 }
 
+/* ==========  Function buildPaginationMeta builds helper output used by other functions in this file.  ===============*/
 function buildPaginationMeta({ total, page, limit }) {
   const totalPages = Math.max(1, Math.ceil(total / limit));
 

@@ -1,3 +1,4 @@
+/* ==========  backend/src/routes/teacherRoutes.js  ===============*/
 const express = require("express");
 
 const auth = require("../middlewares/authMiddleware");

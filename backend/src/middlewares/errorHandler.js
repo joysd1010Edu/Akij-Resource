@@ -1,3 +1,5 @@
+/* ==========  backend/src/middlewares/errorHandler.js  ===============*/
+/* ==========  Function errorHandler contains reusable module logic used by this feature.  ===============*/
 function errorHandler(err, req, res, next) {
   const statusCode = err.statusCode || 500;
 

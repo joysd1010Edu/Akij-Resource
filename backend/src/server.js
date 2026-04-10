@@ -1,3 +1,4 @@
+/* ==========  backend/src/server.js  ===============*/
 const dotenv = require("dotenv");
 dotenv.config();
 dotenv.config({ path: ".env.local" });
@@ -9,6 +10,7 @@ const { syncAllIndexes } = require("./models");
 const port = Number(process.env.PORT) || 5000;
 const shouldSyncIndexes = process.env.SYNC_INDEXES !== "false";
 
+/* ==========  Function startServer contains reusable module logic used by this feature.  ===============*/
 async function startServer() {
   try {
     await connectToDatabase();
@@ -21,6 +23,7 @@ async function startServer() {
       console.log(`Server is running on port ${port}`);
     });
 
+    /* ==========  Function gracefulShutdown contains reusable module logic used by this feature.  ===============*/
     const gracefulShutdown = (signal) => {
       console.log(`${signal} received. Closing server...`);
       server.close(async () => {

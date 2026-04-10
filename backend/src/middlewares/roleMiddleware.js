@@ -1,5 +1,7 @@
+/* ==========  backend/src/middlewares/roleMiddleware.js  ===============*/
 const ApiError = require("../utils/apiError");
 
+/* ==========  Function allowRoles contains reusable module logic used by this feature.  ===============*/
 function allowRoles(...roles) {
   const acceptedRoles = new Set(roles);
 

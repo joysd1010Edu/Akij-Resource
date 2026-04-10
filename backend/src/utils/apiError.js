@@ -1,3 +1,4 @@
+/* ==========  backend/src/utils/apiError.js  ===============*/
 class ApiError extends Error {
   constructor(statusCode, message, details = null) {
     super(message);

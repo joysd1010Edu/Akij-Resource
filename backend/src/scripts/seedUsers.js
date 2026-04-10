@@ -1,3 +1,4 @@
+/* ==========  backend/src/scripts/seedUsers.js  ===============*/
 const dotenv = require("dotenv");
 
 dotenv.config();
@@ -6,6 +7,7 @@ dotenv.config({ path: ".env.local" });
 const { connectToDatabase, closeDatabase } = require("../config/db");
 const { User } = require("../models");
 
+/* ==========  Function ensureUser validates input and access before the next logic runs.  ===============*/
 async function ensureUser(payload) {
   const existing = await User.findOne({
     $or: [{ email: payload.email }, { user_id_login: payload.user_id_login }],
@@ -23,6 +25,7 @@ async function ensureUser(payload) {
   return created;
 }
 
+/* ==========  Function run contains reusable module logic used by this feature.  ===============*/
 async function run() {
   await connectToDatabase();
 

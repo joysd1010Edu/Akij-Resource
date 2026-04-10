@@ -1,3 +1,5 @@
+/* ==========  backend/src/controllers/healthController.js  ===============*/
+/* ==========  Function healthCheck contains reusable module logic used by this feature.  ===============*/
 function healthCheck(req, res) {
   return res.status(200).json({
     status: "ok",

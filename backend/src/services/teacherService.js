@@ -1,3 +1,4 @@
+/* ==========  backend/src/services/teacherService.js  ===============*/
 const mongoose = require("mongoose");
 
 const {
@@ -23,16 +24,19 @@ const {
   ATTENDANCE_STATUS,
 } = require("../utils/enums");
 
+/* ==========  Function escapeRegex contains reusable module logic used by this feature.  ===============*/
 function escapeRegex(value) {
   return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
+/* ==========  Function assertAllowedRole validates input and access before the next logic runs.  ===============*/
 function assertAllowedRole(user) {
   if (!user || !["teacher", "admin"].includes(user.role)) {
     throw new ApiError(403, "Only teacher or admin can perform this action");
   }
 }
 
+/* ==========  Function getManagedTest gets get managed test data for the current module flow.  ===============*/
 async function getManagedTest(testId, user, options = {}) {
   assertAllowedRole(user);
 
@@ -57,6 +61,7 @@ async function getManagedTest(testId, user, options = {}) {
   return test;
 }
 
+/* ==========  Function logActivity contains reusable module logic used by this feature.  ===============*/
 async function logActivity(
   userId,
   entityType,
@@ -75,6 +80,7 @@ async function logActivity(
   });
 }
 
+/* ==========  Function normalizeOptionInput builds helper output used by other functions in this file.  ===============*/
 function normalizeOptionInput(options = []) {
   return options.map((option, index) => ({
     option_key: String(option.option_key || "")
@@ -87,6 +93,7 @@ function normalizeOptionInput(options = []) {
   }));
 }
 
+/* ==========  Function assertQuestionOptionRules validates input and access before the next logic runs.  ===============*/
 function assertQuestionOptionRules(questionType, options) {
   if (!QUESTION_TYPES.includes(questionType)) {
     throw new ApiError(400, "Invalid question_type");
@@ -147,6 +154,7 @@ function assertQuestionOptionRules(questionType, options) {
   }
 }
 
+/* ==========  Function refreshQuestionSetStats contains reusable module logic used by this feature.  ===============*/
 async function refreshQuestionSetStats(questionSetId) {
   const setObjectId = new mongoose.Types.ObjectId(String(questionSetId));
 
@@ -172,6 +180,7 @@ async function refreshQuestionSetStats(questionSetId) {
   });
 }
 
+/* ==========  Function refreshTestCounters contains reusable module logic used by this feature.  ===============*/
 async function refreshTestCounters(testId) {
   const [totalSlots, totalQuestionSets, totalCandidates] = await Promise.all([
     TestSlot.countDocuments({ test_id: testId }),
@@ -187,6 +196,7 @@ async function refreshTestCounters(testId) {
   });
 }
 
+/* ==========  Function getSortOptions gets get sort options data for the current module flow.  ===============*/
 function getSortOptions(sortBy, sortOrder) {
   const allowedSortBy = new Set([
     "created_at",
@@ -201,6 +211,7 @@ function getSortOptions(sortBy, sortOrder) {
   return { [field]: order };
 }
 
+/* ==========  Function createTest creates create test data used by this module.  ===============*/
 async function createTest(payload, user) {
   assertAllowedRole(user);
 
@@ -240,6 +251,7 @@ async function createTest(payload, user) {
   return test;
 }
 
+/* ==========  Function listTests gets list tests data for the current module flow.  ===============*/
 async function listTests(query, user) {
   assertAllowedRole(user);
 
@@ -275,6 +287,7 @@ async function listTests(query, user) {
   };
 }
 
+/* ==========  Function getTestDetails gets get test details data for the current module flow.  ===============*/
 async function getTestDetails(testId, user) {
   const test = await getManagedTest(testId, user);
 
@@ -294,6 +307,7 @@ async function getTestDetails(testId, user) {
   };
 }
 
+/* ==========  Function updateTest updates update test values for this workflow.  ===============*/
 async function updateTest(testId, payload, user) {
   await getManagedTest(testId, user);
 
@@ -337,6 +351,7 @@ async function updateTest(testId, payload, user) {
   return test;
 }
 
+/* ==========  Function createTestSlot creates create test slot data used by this module.  ===============*/
 async function createTestSlot(testId, payload, user) {
   const test = await getManagedTest(testId, user);
 
@@ -365,6 +380,7 @@ async function createTestSlot(testId, payload, user) {
   return slot;
 }
 
+/* ==========  Function createQuestionSet creates create question set data used by this module.  ===============*/
 async function createQuestionSet(testId, payload, user) {
   const test = await getManagedTest(testId, user);
 
@@ -390,6 +406,7 @@ async function createQuestionSet(testId, payload, user) {
   return questionSet;
 }
 
+/* ==========  Function createQuestion creates create question data used by this module.  ===============*/
 async function createQuestion(testId, payload, user) {
   const test = await getManagedTest(testId, user);
 
@@ -469,6 +486,7 @@ async function createQuestion(testId, payload, user) {
   };
 }
 
+/* ==========  Function updateQuestion updates update question values for this workflow.  ===============*/
 async function updateQuestion(questionId, payload, user) {
   const question = await Question.findById(questionId);
 
@@ -562,6 +580,7 @@ async function updateQuestion(questionId, payload, user) {
   };
 }
 
+/* ==========  Function removeQuestion removes remove question related data in this module.  ===============*/
 async function removeQuestion(questionId, user) {
   const question = await Question.findById(questionId);
 
@@ -588,6 +607,7 @@ async function removeQuestion(questionId, user) {
   return question;
 }
 
+/* ==========  Function listQuestions gets list questions data for the current module flow.  ===============*/
 async function listQuestions(testId, query, user) {
   const test = await getManagedTest(testId, user);
   const { page, limit, skip } = parsePagination(query, { page: 1, limit: 10 });
@@ -641,6 +661,7 @@ async function listQuestions(testId, query, user) {
   };
 }
 
+/* ==========  Function addQuestionOptions creates add question options data used by this module.  ===============*/
 async function addQuestionOptions(questionId, payload, user) {
   const question = await Question.findById(questionId);
 
@@ -689,6 +710,7 @@ async function addQuestionOptions(questionId, payload, user) {
   };
 }
 
+/* ==========  Function updateQuestionOption updates update question option values for this workflow.  ===============*/
 async function updateQuestionOption(questionId, optionId, payload, user) {
   const question = await Question.findById(questionId);
 
@@ -761,6 +783,7 @@ async function updateQuestionOption(questionId, optionId, payload, user) {
   return option;
 }
 
+/* ==========  Function assignCandidates contains reusable module logic used by this feature.  ===============*/
 async function assignCandidates(testId, payload, user) {
   const test = await getManagedTest(testId, user);
 
@@ -913,6 +936,7 @@ async function assignCandidates(testId, payload, user) {
   };
 }
 
+/* ==========  Function listCandidates gets list candidates data for the current module flow.  ===============*/
 async function listCandidates(testId, query, user) {
   const test = await getManagedTest(testId, user);
   const { page, limit, skip } = parsePagination(query, { page: 1, limit: 10 });
@@ -944,6 +968,7 @@ async function listCandidates(testId, query, user) {
   };
 }
 
+/* ==========  Function publishTest contains reusable module logic used by this feature.  ===============*/
 async function publishTest(testId, user) {
   const test = await getManagedTest(testId, user, { lean: false });
 
@@ -984,6 +1009,7 @@ async function publishTest(testId, user) {
   return test;
 }
 
+/* ==========  Function getTeacherDashboardMetrics gets get teacher dashboard metrics data for the current module flow.  ===============*/
 async function getTeacherDashboardMetrics(user) {
   assertAllowedRole(user);
 
@@ -1143,7 +1169,11 @@ async function getTeacherDashboardMetrics(user) {
           },
           completed_attempts: {
             $sum: {
-              $cond: [{ $in: ["$status", ["submitted", "timeout", "evaluated"]] }, 1, 0],
+              $cond: [
+                { $in: ["$status", ["submitted", "timeout", "evaluated"]] },
+                1,
+                0,
+              ],
             },
           },
           auto_submitted_attempts: {
@@ -1193,7 +1223,9 @@ async function getTeacherDashboardMetrics(user) {
       review_status: "pending_manual_review",
     }),
     Test.find({ _id: { $in: managedTestIds } })
-      .select("_id title status start_time end_time total_candidates updated_at")
+      .select(
+        "_id title status start_time end_time total_candidates updated_at",
+      )
       .sort({ updated_at: -1, created_at: -1 })
       .limit(5)
       .lean(),
@@ -1255,6 +1287,7 @@ async function getTeacherDashboardMetrics(user) {
   };
 }
 
+/* ==========  Function getTestMetrics gets get test metrics data for the current module flow.  ===============*/
 async function getTestMetrics(testId, user) {
   const test = await getManagedTest(testId, user);
 
@@ -1335,6 +1368,7 @@ async function getTestMetrics(testId, user) {
   };
 }
 
+/* ==========  Function getTextAnswerReviews gets get text answer reviews data for the current module flow.  ===============*/
 async function getTextAnswerReviews(testId, query, user) {
   const test = await getManagedTest(testId, user);
   const { page, limit, skip } = parsePagination(query, { page: 1, limit: 10 });
@@ -1364,6 +1398,7 @@ async function getTextAnswerReviews(testId, query, user) {
   };
 }
 
+/* ==========  Function reviewTextAnswer contains reusable module logic used by this feature.  ===============*/
 async function reviewTextAnswer(answerId, payload, user) {
   assertAllowedRole(user);
 

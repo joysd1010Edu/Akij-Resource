@@ -1,3 +1,5 @@
+/* ==========  backend/src/utils/apiResponse.js  ===============*/
+/* ==========  Function sendSuccess contains reusable module logic used by this feature.  ===============*/
 function sendSuccess(
   res,
   data,

@@ -1,3 +1,4 @@
+/* ==========  backend/src/services/studentService.js  ===============*/
 const mongoose = require("mongoose");
 
 const {
@@ -23,20 +24,24 @@ const {
   evaluateTextAnswer,
 } = require("./resultService");
 
+/* ==========  Function ensureStudentRole validates input and access before the next logic runs.  ===============*/
 function ensureStudentRole(user) {
   if (!user || !["student", "admin"].includes(user.role)) {
     throw new ApiError(403, "Only student or admin can access this resource");
   }
 }
 
+/* ==========  Function escapeRegex contains reusable module logic used by this feature.  ===============*/
 function escapeRegex(value) {
   return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
+/* ==========  Function getObjectId gets get object id data for the current module flow.  ===============*/
 function getObjectId(value) {
   return new mongoose.Types.ObjectId(String(value));
 }
 
+/* ==========  Function logStudentActivity contains reusable module logic used by this feature.  ===============*/
 async function logStudentActivity(
   userId,
   entityType,
@@ -55,6 +60,7 @@ async function logStudentActivity(
   });
 }
 
+/* ==========  Function getCandidateByTest gets get candidate by test data for the current module flow.  ===============*/
 async function getCandidateByTest(testId, studentId) {
   const candidate = await TestCandidate.findOne({
     test_id: testId,
@@ -68,6 +74,7 @@ async function getCandidateByTest(testId, studentId) {
   return candidate;
 }
 
+/* ==========  Function getStudentAttempt gets get student attempt data for the current module flow.  ===============*/
 async function getStudentAttempt(attemptId, studentId) {
   const attempt = await TestAttempt.findById(attemptId);
 
@@ -82,6 +89,7 @@ async function getStudentAttempt(attemptId, studentId) {
   return attempt;
 }
 
+/* ==========  Function syncAttemptProgress updates sync attempt progress values for this workflow.  ===============*/
 async function syncAttemptProgress(attemptId) {
   const attempt = await TestAttempt.findById(attemptId);
   if (!attempt) {
@@ -111,6 +119,7 @@ async function syncAttemptProgress(attemptId) {
   return updatedAttempt;
 }
 
+/* ==========  Function autoSubmitIfTimedOut contains reusable module logic used by this feature.  ===============*/
 async function autoSubmitIfTimedOut(attempt) {
   if (attempt.status !== "in_progress") {
     return {
@@ -162,6 +171,7 @@ async function autoSubmitIfTimedOut(attempt) {
   };
 }
 
+/* ==========  Function getOrderedQuestions gets get ordered questions data for the current module flow.  ===============*/
 async function getOrderedQuestions(questionSetId) {
   return Question.find({
     question_set_id: questionSetId,
@@ -171,6 +181,7 @@ async function getOrderedQuestions(questionSetId) {
     .lean();
 }
 
+/* ==========  Function sanitizeQuestionForStudent contains reusable module logic used by this feature.  ===============*/
 function sanitizeQuestionForStudent(question, options = []) {
   return {
     _id: question._id,
@@ -191,6 +202,7 @@ function sanitizeQuestionForStudent(question, options = []) {
   };
 }
 
+/* ==========  Function buildRemainingSeconds builds helper output used by other functions in this file.  ===============*/
 function buildRemainingSeconds(deadline) {
   if (!deadline) {
     return null;
@@ -202,6 +214,7 @@ function buildRemainingSeconds(deadline) {
   );
 }
 
+/* ==========  Function listAssignedTests gets list assigned tests data for the current module flow.  ===============*/
 async function listAssignedTests(query, user) {
   ensureStudentRole(user);
 
@@ -289,6 +302,7 @@ async function listAssignedTests(query, user) {
   };
 }
 
+/* ==========  Function listPerformedExams gets list performed exams data for the current module flow.  ===============*/
 async function listPerformedExams(query, user) {
   ensureStudentRole(user);
 
@@ -434,6 +448,7 @@ async function listPerformedExams(query, user) {
   };
 }
 
+/* ==========  Function getAssignedTestDetails gets get assigned test details data for the current module flow.  ===============*/
 async function getAssignedTestDetails(testId, user) {
   ensureStudentRole(user);
 
@@ -471,6 +486,7 @@ async function getAssignedTestDetails(testId, user) {
   };
 }
 
+/* ==========  Function getStudentDashboardMetrics gets get student dashboard metrics data for the current module flow.  ===============*/
 async function getStudentDashboardMetrics(user) {
   ensureStudentRole(user);
 
@@ -531,6 +547,7 @@ async function getStudentDashboardMetrics(user) {
   };
 }
 
+/* ==========  Function startTest contains reusable module logic used by this feature.  ===============*/
 async function startTest(testId, payload, user) {
   ensureStudentRole(user);
 
@@ -662,6 +679,7 @@ async function startTest(testId, payload, user) {
   };
 }
 
+/* ==========  Function getCurrentQuestion gets get current question data for the current module flow.  ===============*/
 async function getCurrentQuestion(attemptId, user) {
   ensureStudentRole(user);
 
@@ -738,6 +756,7 @@ async function getCurrentQuestion(attemptId, user) {
   };
 }
 
+/* ==========  Function answerCurrentQuestion contains reusable module logic used by this feature.  ===============*/
 async function answerCurrentQuestion(attemptId, payload, user) {
   ensureStudentRole(user);
 
@@ -836,6 +855,7 @@ async function answerCurrentQuestion(attemptId, payload, user) {
   };
 }
 
+/* ==========  Function skipCurrentQuestion contains reusable module logic used by this feature.  ===============*/
 async function skipCurrentQuestion(attemptId, user) {
   ensureStudentRole(user);
 
@@ -913,6 +933,7 @@ async function skipCurrentQuestion(attemptId, user) {
   };
 }
 
+/* ==========  Function buildResultSummaryPayload builds helper output used by other functions in this file.  ===============*/
 function buildResultSummaryPayload(result) {
   return {
     total_questions: result.total_questions,
@@ -932,6 +953,7 @@ function buildResultSummaryPayload(result) {
   };
 }
 
+/* ==========  Function submitAttempt contains reusable module logic used by this feature.  ===============*/
 async function submitAttempt(attemptId, user) {
   ensureStudentRole(user);
 
@@ -997,6 +1019,7 @@ async function submitAttempt(attemptId, user) {
   };
 }
 
+/* ==========  Function getAttemptResult gets get attempt result data for the current module flow.  ===============*/
 async function getAttemptResult(attemptId, user) {
   ensureStudentRole(user);
 

@@ -1,9 +1,11 @@
+/* ==========  backend/src/services/authService.js  ===============*/
 const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
 
 const { User, RefreshToken } = require("../models");
 const ApiError = require("../utils/apiError");
 
+/* ==========  Function getAccessSecret gets get access secret data for the current module flow.  ===============*/
 function getAccessSecret() {
   const secret = process.env.JWT_ACCESS_SECRET || process.env.JWT_SECRET;
 
@@ -16,6 +18,7 @@ function getAccessSecret() {
   return secret;
 }
 
+/* ==========  Function getRefreshSecret gets get refresh secret data for the current module flow.  ===============*/
 function getRefreshSecret() {
   const secret = process.env.JWT_REFRESH_SECRET || process.env.JWT_SECRET;
 
@@ -28,20 +31,24 @@ function getRefreshSecret() {
   return secret;
 }
 
+/* ==========  Function getAccessExpiresIn gets get access expires in data for the current module flow.  ===============*/
 function getAccessExpiresIn() {
   return (
     process.env.JWT_ACCESS_EXPIRES_IN || process.env.JWT_EXPIRES_IN || "15m"
   );
 }
 
+/* ==========  Function getRefreshExpiresIn gets get refresh expires in data for the current module flow.  ===============*/
 function getRefreshExpiresIn() {
   return process.env.JWT_REFRESH_EXPIRES_IN || "7d";
 }
 
+/* ==========  Function hashToken contains reusable module logic used by this feature.  ===============*/
 function hashToken(value) {
   return crypto.createHash("sha256").update(String(value)).digest("hex");
 }
 
+/* ==========  Function buildAuthPayload builds helper output used by other functions in this file.  ===============*/
 function buildAuthPayload(user) {
   return {
     sub: String(user._id),
@@ -50,6 +57,7 @@ function buildAuthPayload(user) {
   };
 }
 
+/* ==========  Function generateAccessToken contains reusable module logic used by this feature.  ===============*/
 function generateAccessToken(payload, options = {}) {
   return jwt.sign(
     {
@@ -64,6 +72,7 @@ function generateAccessToken(payload, options = {}) {
   );
 }
 
+/* ==========  Function generateRefreshToken contains reusable module logic used by this feature.  ===============*/
 function generateRefreshToken(payload, options = {}) {
   return jwt.sign(
     {
@@ -79,6 +88,7 @@ function generateRefreshToken(payload, options = {}) {
   );
 }
 
+/* ==========  Function issueAuthTokens contains reusable module logic used by this feature.  ===============*/
 async function issueAuthTokens(user, context = {}) {
   const authPayload = buildAuthPayload(user);
 
@@ -109,6 +119,7 @@ async function issueAuthTokens(user, context = {}) {
   };
 }
 
+/* ==========  Function revokeRefreshTokenByValue removes revoke refresh token by value related data in this module.  ===============*/
 async function revokeRefreshTokenByValue(value, context = {}) {
   if (!value) {
     return { revoked: false };
@@ -149,6 +160,7 @@ async function revokeRefreshTokenByValue(value, context = {}) {
   return { revoked: true };
 }
 
+/* ==========  Function revokeAllRefreshTokensForUser removes revoke all refresh tokens for user related data in this module.  ===============*/
 async function revokeAllRefreshTokensForUser(userId, context = {}) {
   await RefreshToken.updateMany(
     {
@@ -165,7 +177,9 @@ async function revokeAllRefreshTokensForUser(userId, context = {}) {
   );
 }
 
+/* ==========  Function rotateRefreshToken contains reusable module logic used by this feature.  ===============*/
 async function rotateRefreshToken(payload = {}, context = {}) {
+  /*===== first check direct payload, then fallback context values ===========*/
   const refreshTokenValue =
     payload.refresh_token || context.refreshToken || context.cookieRefreshToken;
 
@@ -200,6 +214,7 @@ async function rotateRefreshToken(payload = {}, context = {}) {
     session.revoked_at ||
     session.expires_at <= new Date()
   ) {
+    /*===== if session mismatch is found, revoke all active sessions for safety ===========*/
     await revokeAllRefreshTokensForUser(decoded.sub, context);
     throw new ApiError(401, "Refresh token is no longer valid");
   }
@@ -227,6 +242,7 @@ async function rotateRefreshToken(payload = {}, context = {}) {
   };
 }
 
+/* ==========  Function resolveRequestContext builds helper output used by other functions in this file.  ===============*/
 function resolveRequestContext(context = {}) {
   return {
     ip: context.ip || null,
@@ -239,6 +255,7 @@ function resolveRequestContext(context = {}) {
   };
 }
 
+/* ==========  Function buildAuthResponse builds helper output used by other functions in this file.  ===============*/
 function buildAuthResponse(tokens, user) {
   return {
     token: tokens.access_token,
@@ -250,6 +267,7 @@ function buildAuthResponse(tokens, user) {
   };
 }
 
+/* ==========  Function sanitizeUser contains reusable module logic used by this feature.  ===============*/
 function sanitizeUser(user) {
   return {
     id: String(user._id),
@@ -265,12 +283,14 @@ function sanitizeUser(user) {
   };
 }
 
+/* ==========  Function resolveLoginIdentifier builds helper output used by other functions in this file.  ===============*/
 function resolveLoginIdentifier(payload = {}) {
   return (payload.login || payload.email || payload.user_id_login || "")
     .toString()
     .trim();
 }
 
+/* ==========  Function assertUniqueAuthIdentity validates input and access before the next logic runs.  ===============*/
 async function assertUniqueAuthIdentity({ email, userIdLogin }) {
   const checks = [];
 
@@ -305,6 +325,7 @@ async function assertUniqueAuthIdentity({ email, userIdLogin }) {
   throw new ApiError(409, "User identity already exists");
 }
 
+/* ==========  Function loginUser contains reusable module logic used by this feature.  ===============*/
 async function loginUser(payload) {
   const loginIdentifier = resolveLoginIdentifier(payload);
   const password = String(payload.password || "");
@@ -344,6 +365,7 @@ async function loginUser(payload) {
   return buildAuthResponse(tokens, sanitizeUser(user));
 }
 
+/* ==========  Function createSeedUser creates create seed user data used by this module.  ===============*/
 async function createSeedUser(payload = {}) {
   const role = payload.role || "teacher";
 
@@ -378,6 +400,7 @@ async function createSeedUser(payload = {}) {
   return sanitizeUser(user);
 }
 
+/* ==========  Function registerUser creates register user data used by this module.  ===============*/
 async function registerUser(payload = {}) {
   const fullName = payload.full_name?.trim();
   const password = payload.password;
@@ -416,7 +439,9 @@ async function registerUser(payload = {}) {
   return buildAuthResponse(tokens, sanitizeUser(user));
 }
 
+/* ==========  Function refreshAuthTokens contains reusable module logic used by this feature.  ===============*/
 async function refreshAuthTokens(payload = {}) {
+  /*===== this method is used by /auth/refresh endpoint ===========*/
   const context = resolveRequestContext(payload.context);
   const refreshed = await rotateRefreshToken(
     {
@@ -428,6 +453,7 @@ async function refreshAuthTokens(payload = {}) {
   return buildAuthResponse(refreshed, refreshed.user);
 }
 
+/* ==========  Function logoutUser contains reusable module logic used by this feature.  ===============*/
 async function logoutUser(payload = {}) {
   const context = resolveRequestContext(payload.context);
 
@@ -441,6 +467,7 @@ async function logoutUser(payload = {}) {
   return { success: true };
 }
 
+/* ==========  Function getMyProfile gets get my profile data for the current module flow.  ===============*/
 async function getMyProfile(userId) {
   const user = await User.findById(userId).lean();
 

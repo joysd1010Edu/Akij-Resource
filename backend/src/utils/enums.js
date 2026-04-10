@@ -1,3 +1,4 @@
+/* ==========  backend/src/utils/enums.js  ===============*/
 const USER_ROLES = ["teacher", "student", "admin"];
 const USER_STATUS = ["active", "inactive", "suspended"];
 
