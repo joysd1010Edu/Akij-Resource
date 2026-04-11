@@ -65,11 +65,18 @@ export interface TeacherTest {
   total_question_set: number;
 }
 
+export interface CreateTeacherTestPayload {
+  title: string;
+  start_time: string;
+  end_time: string;
+  duration_minutes: number;
+  question_type_mode?: "radio" | "checkbox" | "text" | "mixed";
+}
+
 export async function getTeacherDashboardMetrics() {
-  const { data } =
-    await apiClient.get<ApiResponse<TeacherDashboardMetrics>>(
-      "/teacher/dashboard/metrics",
-    );
+  const { data } = await apiClient.get<ApiResponse<TeacherDashboardMetrics>>(
+    "/teacher/dashboard/metrics",
+  );
   return data;
 }
 
@@ -90,4 +97,13 @@ export async function getTeacherTests(params?: {
     items: data.data,
     meta: data.meta as PaginationMeta | undefined,
   };
+}
+
+export async function createTeacherTest(payload: CreateTeacherTestPayload) {
+  const { data } = await apiClient.post<ApiResponse<TeacherTest>>(
+    "/teacher/tests",
+    payload,
+  );
+
+  return data.data;
 }
