@@ -4,6 +4,7 @@
 import type { AxiosError, InternalAxiosRequestConfig } from "axios";
 import { useEffect, useRef } from "react";
 
+import { showSessionExpiredAlert } from "@/lib/alerts/appAlert";
 import { authApiClient, apiClient } from "@/lib/api/client";
 import { useAuthStore } from "@/stores/authStore";
 
@@ -45,7 +46,12 @@ export default function AxiosProvider({
           requestUrl.includes("/auth/register") ||
           requestUrl.includes("/auth/refresh");
 
-        if (!originalRequest || status !== 401 || originalRequest._retry || isAuthPath) {
+        if (
+          !originalRequest ||
+          status !== 401 ||
+          originalRequest._retry ||
+          isAuthPath
+        ) {
           return Promise.reject(error);
         }
 
@@ -56,7 +62,8 @@ export default function AxiosProvider({
             /*===== single refresh request even when many calls fail at once ===========*/
             refreshingPromiseRef.current = authApiClient
               .post("/auth/refresh", {
-                refresh_token: useAuthStore.getState().refreshToken || undefined,
+                refresh_token:
+                  useAuthStore.getState().refreshToken || undefined,
               })
               .then((res) => {
                 const payload = res.data?.data;
@@ -85,6 +92,7 @@ export default function AxiosProvider({
           return apiClient(originalRequest);
         } catch (refreshError) {
           clearAuth();
+          await showSessionExpiredAlert();
           return Promise.reject(refreshError);
         }
       },

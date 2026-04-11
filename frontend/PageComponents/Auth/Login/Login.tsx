@@ -1,5 +1,4 @@
 "use client";
-/* ==========  frontend/PageComponents/Auth/Login/Login.tsx  ===============*/
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -15,10 +14,11 @@ import {
   getApiErrorMessage,
   useLoginMutation,
 } from "@/PageComponents/Hooks/useAuth";
+import { showTaskError, showTaskSuccess } from "@/lib/alerts/appAlert";
 import { loginSchema, type LoginSchemaInput } from "@/lib/validations/auth";
 import { useAuthStore } from "@/stores/authStore";
 
-/* ==========  Function routeByRole contains reusable module logic used by this feature.  ===============*/
+/* ==========  routing based on role  ===============*/
 function routeByRole(role?: string) {
   if (role === "teacher") {
     return "/teacher/dashboard";
@@ -64,14 +64,18 @@ export default function Login() {
   const onSubmit = handleSubmit(async (values) => {
     try {
       const res = await mutation.mutateAsync(values);
+      await showTaskSuccess(
+        "Login",
+        `Welcome back ${res.data.user.full_name}. Redirecting to your dashboard.`,
+      );
       router.push(routeByRole(res.data.user.role));
-    } catch {
-      // Error is handled in UI.
+    } catch (error) {
+      await showTaskError("Login", getApiErrorMessage(error));
     }
   });
 
   return (
-    <section className="mx-auto flex w-full max-w-5xl flex-1 items-center justify-center px-4 py-10 animate-page-enter">
+    <section className="mx-auto min-h-[85vh] flex w-full max-w-5xl flex-1 items-center justify-center px-4 py-10 animate-page-enter">
       <Card className="w-full max-w-md shadow-lg shadow-slate-300/30">
         <CardHeader>
           <CardTitle className="text-center text-2xl font-semibold text-slate-800">

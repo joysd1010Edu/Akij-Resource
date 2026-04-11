@@ -86,20 +86,19 @@ userSchema.statics.hashPassword = function hashPassword(plainPassword) {
   return bcrypt.hash(plainPassword, 12);
 };
 
-userSchema.pre("save", async function hashPasswordOnSave(next) {
+userSchema.pre("save", async function hashPasswordOnSave() {
   if (!this.isModified("password_hash")) {
-    return next();
+    return;
   }
 
   if (
     typeof this.password_hash === "string" &&
     this.password_hash.startsWith("$2")
   ) {
-    return next();
+    return;
   }
 
   this.password_hash = await bcrypt.hash(this.password_hash, 12);
-  return next();
 });
 
 const User = mongoose.model("User", userSchema);

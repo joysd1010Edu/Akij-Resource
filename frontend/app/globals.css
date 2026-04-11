@@ -4,7 +4,6 @@
 :root {
   --background: #f3f6fb;
   --foreground: #1e293b;
- 
 }
 
 @theme inline {
@@ -47,4 +46,48 @@ body {
 
 .animate-soft-pulse {
   animation: soft-pulse 2.2s ease-in-out infinite;
+}
+
+.swal2-popup.ibos-alert-modal {
+  border-radius: 14px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 15px 40px rgba(15, 23, 42, 0.2);
+  padding: 1.4rem 1.2rem 1.2rem;
+}
+
+.ibos-alert-content {
+  text-align: left;
+}
+
+.ibos-alert-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 0.35rem;
+}
+
+.ibos-alert-description {
+  font-size: 0.95rem;
+  line-height: 1.55;
+  color: #475569;
+}
+
+.ibos-alert-confirm,
+.ibos-alert-cancel {
+  border: 0;
+  border-radius: 10px;
+  padding: 0.65rem 1rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin: 0 0.2rem;
+}
+
+.ibos-alert-confirm {
+  background: #4338ca;
+  color: #ffffff;
+}
+
+.ibos-alert-cancel {
+  background: #e2e8f0;
+  color: #334155;
 }

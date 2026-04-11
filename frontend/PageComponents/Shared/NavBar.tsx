@@ -7,6 +7,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { FiLogOut, FiUser } from "react-icons/fi";
 
 import { Button } from "@/components/ui/button";
+import { showTaskInfo } from "@/lib/alerts/appAlert";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/stores/authStore";
 
@@ -134,8 +135,12 @@ export default function NavBar() {
 
               <Button
                 variant="ghost"
-                onClick={() => {
+                onClick={async () => {
                   clearAuth();
+                  await showTaskInfo(
+                    "Logged out",
+                    "You have been logged out from your account.",
+                  );
                   router.push("/");
                 }}
               >

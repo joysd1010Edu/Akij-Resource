@@ -1,5 +1,4 @@
 "use client";
-/* ==========  frontend/PageComponents/Auth/Register/Register.tsx  ===============*/
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -11,14 +10,18 @@ import { FiEye, FiEyeOff, FiUserPlus } from "react-icons/fi";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { getApiErrorMessage, useRegisterMutation } from "@/PageComponents/Hooks/useAuth";
+import { showTaskError, showTaskSuccess } from "@/lib/alerts/appAlert";
+import {
+  getApiErrorMessage,
+  useRegisterMutation,
+} from "@/PageComponents/Hooks/useAuth";
 import {
   registerSchema,
   type RegisterSchemaInput,
 } from "@/lib/validations/auth";
 import { useAuthStore } from "@/stores/authStore";
 
-/* ==========  Function routeByRole contains reusable module logic used by this feature.  ===============*/
+/* ========== routeByRole routing to dashboard based on user role.  ===============*/
 function routeByRole(role?: string) {
   if (role === "teacher") {
     return "/teacher/dashboard";
@@ -67,14 +70,18 @@ export default function Register() {
   const onSubmit = handleSubmit(async (values) => {
     try {
       const res = await mutation.mutateAsync(values);
+      await showTaskSuccess(
+        "Registration",
+        `Account created for ${res.data.user.full_name}. Redirecting now.`,
+      );
       router.push(routeByRole(res.data.user.role));
-    } catch {
-      // Error is handled in UI.
+    } catch (error) {
+      await showTaskError("Registration", getApiErrorMessage(error));
     }
   });
 
   return (
-    <section className="mx-auto flex w-full max-w-5xl flex-1 items-center justify-center px-4 py-10 animate-page-enter">
+    <section className="mx-auto min-h-[85vh] flex w-full max-w-5xl flex-1 items-center justify-center px-4 py-10 animate-page-enter">
       <Card className="w-full max-w-xl shadow-lg shadow-slate-300/30">
         <CardHeader>
           <CardTitle className="text-center text-2xl font-semibold text-slate-800">
@@ -82,29 +89,51 @@ export default function Register() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <form onSubmit={onSubmit} className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <form
+            onSubmit={onSubmit}
+            className="grid grid-cols-1 gap-4 sm:grid-cols-2"
+          >
             <div className="space-y-2 sm:col-span-2">
-              <label className="text-sm font-medium text-slate-700" htmlFor="full_name">
+              <label
+                className="text-sm font-medium text-slate-700"
+                htmlFor="full_name"
+              >
                 Full Name
               </label>
-              <Input id="full_name" placeholder="Enter full name" {...register("full_name")} />
+              <Input
+                id="full_name"
+                placeholder="Enter full name"
+                {...register("full_name")}
+              />
               {errors.full_name ? (
-                <p className="text-xs text-red-600">{errors.full_name.message}</p>
+                <p className="text-xs text-red-600">
+                  {errors.full_name.message}
+                </p>
               ) : null}
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-medium text-slate-700" htmlFor="email">
+              <label
+                className="text-sm font-medium text-slate-700"
+                htmlFor="email"
+              >
                 Email
               </label>
-              <Input id="email" placeholder="Enter email" {...register("email")} />
+              <Input
+                id="email"
+                placeholder="Enter email"
+                {...register("email")}
+              />
               {errors.email ? (
                 <p className="text-xs text-red-600">{errors.email.message}</p>
               ) : null}
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-medium text-slate-700" htmlFor="user_id_login">
+              <label
+                className="text-sm font-medium text-slate-700"
+                htmlFor="user_id_login"
+              >
                 User ID
               </label>
               <Input
@@ -113,12 +142,17 @@ export default function Register() {
                 {...register("user_id_login")}
               />
               {errors.user_id_login ? (
-                <p className="text-xs text-red-600">{errors.user_id_login.message}</p>
+                <p className="text-xs text-red-600">
+                  {errors.user_id_login.message}
+                </p>
               ) : null}
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-medium text-slate-700" htmlFor="role">
+              <label
+                className="text-sm font-medium text-slate-700"
+                htmlFor="role"
+              >
                 Role
               </label>
               <select
@@ -135,7 +169,10 @@ export default function Register() {
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-medium text-slate-700" htmlFor="password">
+              <label
+                className="text-sm font-medium text-slate-700"
+                htmlFor="password"
+              >
                 Password
               </label>
               <div className="relative">
@@ -156,7 +193,9 @@ export default function Register() {
                 </button>
               </div>
               {errors.password ? (
-                <p className="text-xs text-red-600">{errors.password.message}</p>
+                <p className="text-xs text-red-600">
+                  {errors.password.message}
+                </p>
               ) : null}
             </div>
 
@@ -177,7 +216,10 @@ export default function Register() {
 
             <p className="sm:col-span-2 text-center text-sm text-slate-600">
               Already have an account?{" "}
-              <Link href="/login" className="font-semibold text-indigo-700 hover:underline">
+              <Link
+                href="/login"
+                className="font-semibold text-indigo-700 hover:underline"
+              >
                 Login
               </Link>
             </p>
